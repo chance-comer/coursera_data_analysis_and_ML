@@ -23,4 +23,4 @@ y = valintfunc(x)
 res2 = opt.minimize(valintfunc, [30], method = 'BFGS')
 res3 = opt.differential_evolution(valintfunc, [(1, 30)])
 
-plt.plot(x, y)
+#plt.plot(x, y)
