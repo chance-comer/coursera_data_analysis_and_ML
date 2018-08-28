@@ -17,6 +17,16 @@ lambda_param = 1 / 20
 # exponential distribution with parameter lambda = 1 / 20. 
 exp_dist = sts.expon(scale = 1 / lambda_param)
 
+# example of exponential distribution with 1000 values (histogram and probability density function)
+x = np.linspace(-1, 140, 1000)
+example_of_distribution = exp_dist.rvs(1000)
+plt.hist(example_of_distribution, normed = True, label = 'empiric')
+plt.plot(x, exp_dist.pdf(x), label = 'theoretical')
+
+plt.xlabel('$x$')
+plt.ylabel('$f(x)$')
+plt.title('exponential distribution')
+plt.legend()
 #1000 samples with size = [ 5, 10, 50]
 n = [5, 10, 50]
 
