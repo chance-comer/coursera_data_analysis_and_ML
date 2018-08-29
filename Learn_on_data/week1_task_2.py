@@ -25,3 +25,6 @@ X = np.hstack((np.ones(len(X)).reshape(len(X), 1), X))
 #o = np.ones(len(a)).reshape(len(a), 1)
 
 #b = np.hstack((o, a))
+w = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
+
+y_pred =  X.dot(w)
