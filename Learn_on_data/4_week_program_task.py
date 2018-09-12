@@ -6,14 +6,11 @@ Created on Tue Sep 11 16:42:05 2018
 """
 
 import sklearn.datasets as ds
-import numpy as np
-import pandas as pd
-import sklearn.cross_validation as cross_val
 import sklearn.tree as tree
-import sklearn.metrics as metrics
 import sklearn.model_selection as ms
 import sklearn.ensemble as ensemble
 import matplotlib.pyplot as plt
+import XGBoost as xgb
 
 data = ds.load_digits()
 
