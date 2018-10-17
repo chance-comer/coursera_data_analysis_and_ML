@@ -18,3 +18,5 @@ ps = np.linspace(0, 1, 500)
 cs = [samplesize_confint_proportion(p, 0.01) for p in ps]
 
 plt.plot(ps, cs)
+
+answer = max(cs)
