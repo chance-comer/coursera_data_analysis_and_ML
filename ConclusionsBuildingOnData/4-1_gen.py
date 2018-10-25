@@ -20,43 +20,48 @@ normal = normal.drop(['Patient_id', 'Diagnosis'], axis = 1)
 early = early.drop(['Patient_id', 'Diagnosis'], axis = 1)
 cancer = cancer.drop(['Patient_id', 'Diagnosis'], axis = 1)
 
-easy_normal = {}
-normal_cancer = {}
+early_normal = {}
+early_cancer = {}
 
 for i, col in enumerate(normal.columns):
-   easy_normal[col] = st.ttest_ind(normal[col], early[col], equal_var = False)
-   normal_cancer[col] = st.ttest_ind(normal[col], cancer[col], equal_var = False)
+   early_normal[col] = st.ttest_ind(normal[col], early[col], equal_var = False)
+   early_cancer[col] = st.ttest_ind(early[col], cancer[col], equal_var = False)
 
-pval_easy_normal = pd.DataFrame([[k, easy_normal[k].pvalue] for k in easy_normal.keys()])
-pval_normal_cancer = pd.DataFrame([[k, normal_cancer[k].pvalue] for k in normal_cancer.keys()])
+pval_early_normal = pd.DataFrame([[k, early_normal[k].pvalue] for k in early_normal.keys()])
+pval_early_cancer = pd.DataFrame([[k, early_cancer[k].pvalue] for k in early_cancer.keys()])
 
-reject_easy_normal, p_corrected_easy_normal, a1_easy_normal, a2_easy_normal = multipletests(
-    pval_easy_normal[1], alpha = 0.05 / 2, method = 'holm')
-reject_easy_normal2, p_corrected_easy_normal2, a1_easy_normal2, a2_easy_normal2 = multipletests(
-    pval_easy_normal[1], alpha = 0.05 / 2, method = 'fdr_bh')
+reject_early_normal, p_corrected_early_normal, a1_early_normal, a2_early_normal = multipletests(
+    pval_early_normal[1], alpha = 0.05 / 2, method = 'holm')
+reject_early_normal2, p_corrected_early_normal2, a1_early_normal2, a2_early_normal2 = multipletests(
+    pval_early_normal[1], alpha = 0.05 / 2, method = 'fdr_bh')
 
-reject_normal_cancer, p_corrected_normal_cancer, a1_normal_cancer, a2_normal_cancer = multipletests(
-    pval_normal_cancer[1], alpha = 0.05 / 2, method = 'holm')
-reject_normal_cancer2, p_corrected_normal_cancer2, a1_normal_cancer2, a2_normal_cancer2 = multipletests(
-    pval_normal_cancer[1], alpha = 0.05 / 2, method = 'fdr_bh')
+reject_early_cancer, p_corrected_early_cancer, a1_early_cancer, a2_early_cancer = multipletests(
+    pval_early_cancer[1], alpha = 0.05 / 2, method = 'holm')
+reject_early_cancer2, p_corrected_early_cancer2, a1_early_cancer2, a2_early_cancer2 = multipletests(
+    pval_early_cancer[1], alpha = 0.05 / 2, method = 'fdr_bh')
 
 def foldchange(T, C):
-  if T >= C:
-    return T / C
-  else:
-    return - C / T
+  a1 = np.array(T)
+  a2  = np.array(C)
+  return [k[0] / k[1] if k[0] >= k[1] else - k[1] / k[0] for k in zip(a1, a2)]
 
-p_corrected_normal_cancer = pd.DataFrame(np.vstack((pval_easy_normal[0], p_corrected_normal_cancer)).T)
-p_corrected_easy_normal = pd.DataFrame(np.vstack((pval_normal_cancer[0], p_corrected_easy_normal)).T)
-p_corrected_normal_cancer2 = pd.DataFrame(np.vstack((pval_easy_normal[0], p_corrected_normal_cancer2)).T)
-p_corrected_easy_normal2 = pd.DataFrame(np.vstack((pval_normal_cancer[0], p_corrected_easy_normal2)).T)
+p_corrected_early_cancer = pd.DataFrame(np.vstack((pval_early_cancer[0], p_corrected_early_cancer)).T)
+p_corrected_early_normal = pd.DataFrame(np.vstack((pval_early_normal[0], p_corrected_early_normal)).T)
+p_corrected_early_cancer2 = pd.DataFrame(np.vstack((pval_early_cancer[0], p_corrected_early_cancer2)).T)
+p_corrected_early_normal2 = pd.DataFrame(np.vstack((pval_early_normal[0], p_corrected_early_normal2)).T)
 
-significant_easy_normal_holm = p_corrected_easy_normal[p_corrected_easy_normal[1] < 0.05]
-significant_normal_cancer_holm = p_corrected_normal_cancer[p_corrected_normal_cancer[1] < 0.05]
+significant_early_normal_holm = p_corrected_early_normal[p_corrected_early_normal[1] < 0.05]
+significant_early_cancer_holm = p_corrected_early_cancer[p_corrected_early_cancer[1] < 0.05]
 
-significant_easy_normal_bh = p_corrected_easy_normal2[p_corrected_easy_normal2[1] < 0.05]
-significant_normal_cancer_bh = p_corrected_normal_cancer2[p_corrected_normal_cancer2[1] < 0.05]
+significant_early_normal_bh = p_corrected_early_normal2[p_corrected_early_normal2[1] < 0.05]
+significant_early_cancer_bh = p_corrected_early_cancer2[p_corrected_early_cancer2[1] < 0.05]
 
-fold_change_en_h = foldchange((early[significant_easy_normal_holm[0]]).mean(), normal[significant_easy_normal_holm[0]]).mean())
+fold_change_en_h = foldchange((early[significant_early_normal_holm[0]]).mean(), (normal[significant_early_normal_holm[0]]).mean())
+fold_change_en_bh = foldchange((early[significant_early_normal_bh[0]]).mean(), (normal[significant_early_normal_bh[0]]).mean())
+
+fold_change_ec_h = foldchange((cancer[significant_early_cancer_holm[0]]).mean(), (early[significant_early_cancer_holm[0]]).mean())
+fold_change_ec_bh = foldchange((cancer[significant_early_cancer_bh[0]]).mean(), (early[significant_early_cancer_bh[0]]).mean())
+
+
 
 
