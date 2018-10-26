@@ -8,7 +8,7 @@ Created on Thu Oct 25 16:07:15 2018
 import pandas as pd
 import numpy as np
 import scipy.stats as st 
-from statsmodels.sandbox.stats.multicomp import multipletests 
+from statsmodels.stats.multitest import multipletests 
 
 data = pd.read_csv('gene_high_throughput_sequencing.csv')
 
@@ -50,11 +50,11 @@ p_corrected_early_normal = pd.DataFrame(np.vstack((pval_early_normal[0], p_corre
 p_corrected_early_cancer2 = pd.DataFrame(np.vstack((pval_early_cancer[0], p_corrected_early_cancer2)).T)
 p_corrected_early_normal2 = pd.DataFrame(np.vstack((pval_early_normal[0], p_corrected_early_normal2)).T)
 
-significant_early_normal_holm = p_corrected_early_normal[p_corrected_early_normal[1] < 0.05]
-significant_early_cancer_holm = p_corrected_early_cancer[p_corrected_early_cancer[1] < 0.05]
+significant_early_normal_holm = p_corrected_early_normal[p_corrected_early_normal[1] <  0.05 / 2]
+significant_early_cancer_holm = p_corrected_early_cancer[p_corrected_early_cancer[1] <  0.05 / 2]
 
-significant_early_normal_bh = p_corrected_early_normal2[p_corrected_early_normal2[1] < 0.05]
-significant_early_cancer_bh = p_corrected_early_cancer2[p_corrected_early_cancer2[1] < 0.05]
+significant_early_normal_bh = p_corrected_early_normal2[p_corrected_early_normal2[1] <  0.05 / 2]
+significant_early_cancer_bh = p_corrected_early_cancer2[p_corrected_early_cancer2[1] <  0.05 / 2]
 
 fold_change_en_h = foldchange((early[significant_early_normal_holm[0]]).mean(), (normal[significant_early_normal_holm[0]]).mean())
 fold_change_en_bh = foldchange((early[significant_early_normal_bh[0]]).mean(), (normal[significant_early_normal_bh[0]]).mean())
