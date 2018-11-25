@@ -7,7 +7,7 @@ Created on Mon Oct 22 15:04:32 2018
 
 import scipy.stats as st
 import pandas as pd
-from sklearn import model_selection, linear_model, ensemble, metrics, cross_validation
+from sklearn import model_selection, linear_model, ensemble, metrics
 from statsmodels.stats.weightstats import *
 
 data = pd.read_csv('diamonds.txt', sep = '\t')
@@ -21,7 +21,7 @@ sample_size = 160
 z = (9.57 - 9.5) / (sigma / sample_size**0.5)
 lvl = 2* (1 - st.norm.cdf(abs(z)))
 
-train_sample, test_sample = cross_validation.train_test_split(data, test_size = 0.25, random_state = 1)
+train_sample, test_sample = model_selection.train_test_split(data, test_size = 0.25, random_state = 1)
 
 train_y = train_sample['price']
 train_X = train_sample.drop(['price'], axis = 1)
