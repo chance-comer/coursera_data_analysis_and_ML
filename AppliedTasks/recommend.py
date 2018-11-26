@@ -39,8 +39,61 @@ freq_table.to_csv('freq_table.txt', index = False)
 '''
 freq_table = pd.read_csv('freq_table.txt')
 
-viewed_test = np.array([])
-bought_test = np.array([])
+sorted_view = freq_table.sort_values('view_freq', ascending = False)
+#top_view_1 = sorted_view[:1]
+#top_view_5 = sorted_view[:5]
+
+sorted_bought = freq_table.sort_values('bought_freq', ascending = False)
+#top_bought_1 = sorted_bought[:1]
+#tope_bought_5 = sorted_bought[:5]
+
+def avg_pr_rec(file_name, recommends_count = 5, is_topView = True):
+  with open(file_name) as f:
+    something_bought = 0
+    precision = 0
+    recall = 0
+  
+    for line in f:
+      tr_line = line.strip()
+      ar_v_b = tr_line.split(';')    
+      if ar_v_b[1] != '':
+        something_bought += 1
+      
+        b_str = ar_v_b[1].split(',')
+        v_str = ar_v_b[0].split(',')
+        b = [int(a) for a in b_str]
+        v = [int(a) for a in v_str]
+        v_len = len(v)
+        
+        viewed_freq = freq_table[freq_table['product_id'].isin(v)]
+        viewed_freq['num'] = 0
+        
+        for i,val in enumerate(v):
+          if viewed_freq[viewed_freq['product_id'] == i] is not None:
+            #viewed_freq[viewed_freq['product_id'] == i]['num'] = i
+            viewed_freq.loc[viewed_freq['product_id'] == i, 'num'] = i
+          else:
+            viewed_freq.append([val, 0, 0, i])
+        
+        real_recommends_count = min(recommends_count, v_len)
+        real_recommends = sorted_view[:real_recommends_count]['product_id'] if is_topView else sorted_bought[:real_recommends_count]['product_id']
+        from_recommends_bought = len(set(real_recommends) & set(b))
+        precision += from_recommends_bought / recommends_count
+        recall += from_recommends_bought / len(b)
+    avg_precision = precision / something_bought
+    avg_recall = recall / something_bought
+    return avg_precision, avg_recall
+
+train_avg_precision_1rec_view, train_avg_recall_1rec_view = avg_pr_rec('coursera_sessions_train.txt', recommends_count = 1)
+train_avg_precision_1rec_bought, train_avg_recall_1rec_bought = avg_pr_rec('coursera_sessions_train.txt', recommends_count = 1, is_topView = False)
+train_avg_precision_5rec_view, train_avg_recall_5rec_view = avg_pr_rec('coursera_sessions_train.txt')
+train_avg_precision_5rec_bought, train_avg_recall_5rec_bought = avg_pr_rec('coursera_sessions_train.txt', is_topView = False)
+
+test_avg_precision_1rec_view, test_avg_recall_1rec_view = avg_pr_rec('coursera_sessions_test.txt', recommends_count = 1)
+test_avg_precision_1rec_bought, test_avg_recall_1rec_bought = avg_pr_rec('coursera_sessions_test.txt', recommends_count = 1, is_topView = False)
+test_avg_precision_5rec_view, test_avg_recall_5rec_view = avg_pr_rec('coursera_sessions_test.txt')
+test_avg_precision_5rec_bought, test_avg_recall_5rec_bought = avg_pr_rec('coursera_sessions_test.txt', is_topView = False)
+
 '''
 with open('coursera_sessions_test.txt') as f:
   for line in f:

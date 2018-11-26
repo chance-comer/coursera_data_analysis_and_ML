@@ -1,4 +1,4 @@
-session_id,view_freq,bought_freq
+product_id,view_freq,bought_freq
 0,6,0
 1,6,0
 2,9,0
